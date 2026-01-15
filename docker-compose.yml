@@ -1,0 +1,118 @@
+version: "3.9"
+
+services:
+  redis:
+    image: redis:7.2.4-alpine
+    container_name: redis-newsbot-${APP_VERSION:-latest}
+    restart: unless-stopped
+    command: ["redis-server", "--logfile", "/var/log/redis/redis.log", "--loglevel", "${REDIS_LOG_LEVEL:-notice}"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./logs_docker_images/redis:/var/log/redis
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: '0.5'
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  web:
+    build: .
+    image: web-newsbot-api:${APP_VERSION:-latest}
+    container_name: web-newsbot-api-${APP_VERSION:-latest}
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      - redis
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./logs_docker_images/web:/app/logs
+    command: uvicorn main:app --host 0.0.0.0 --port 8000
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.5'
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  worker:
+    build: .
+    image: worker-newsbot:${APP_VERSION:-latest}
+    container_name: worker-newsbot-${APP_VERSION:-latest}
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      - redis
+    volumes:
+      - ./logs_docker_images/worker:/app/logs
+    command: celery -A app.tasks:celery_app worker --loglevel=info
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.8'
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  beat:
+    build: .
+    image: beat-newsbot:${APP_VERSION:-latest}
+    container_name: beat-newsbot-${APP_VERSION:-latest}
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      - redis
+    volumes:
+      - ./logs_docker_images/beat:/app/logs
+    command: celery -A app.tasks:celery_app beat --loglevel=info
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: '0.2'
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  bot:
+    build: .
+    image: bot-newsbot-interactive:${APP_VERSION:-latest}
+    container_name: bot-newsbot-interactive-${APP_VERSION:-latest}
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      - redis
+    volumes:
+      - ./logs_docker_images/bot:/app/logs
+    command: python app/telegram/run_bot.py
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.5'
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+

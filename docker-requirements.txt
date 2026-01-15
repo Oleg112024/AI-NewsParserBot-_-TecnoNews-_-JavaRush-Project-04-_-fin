@@ -1,0 +1,16 @@
+fastapi
+uvicorn[standard]
+pydantic
+pydantic-settings
+python-dotenv
+redis
+requests
+beautifulsoup4
+telethon
+celery
+openai
+groq
+pytz
+httpx
+typing_extensions
+
