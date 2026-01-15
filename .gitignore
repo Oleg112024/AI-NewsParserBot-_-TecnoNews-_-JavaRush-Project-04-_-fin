@@ -12,9 +12,9 @@ ENV/
 
 # Environment and secrets
 .env
-.env.*
+env.example
 *.env
-!.env.example
+!env.example
 
 # Telethon / Telegram session files
 *.session
