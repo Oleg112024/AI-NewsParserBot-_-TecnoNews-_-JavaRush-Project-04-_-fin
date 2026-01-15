@@ -85,7 +85,7 @@
 docker-compose up -d --build
 ```
 *На этом этапе Docker автоматически создаст необходимые директории на вашем компьютере, если они отсутствуют:*
-- `logs_docker_images/` — корневая папка для всех логов.
+- `logs_docker_images/` — корневая папка для всех логов, создаётся автоматически на компьютере пользователя.
 - `logs_docker_images/web/`, `logs_docker_images/worker/`, `logs_docker_images/beat/`, `logs_docker_images/bot/` — для логов соответствующих сервисов.
 - `logs_docker_images/redis/` — для системных логов базы данных.
 
