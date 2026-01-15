@@ -161,5 +161,5 @@ docker logs -f newsbot-worker-v.0.3.19AI
 
 ---
 *Детальное техническое описание функций и классов читайте в [docs/AI NewsBot - architecture.md](docs/AI_NewsBot_-_architecture.md).*
-
+*Папка docs содержит полную документацию по архитектуре и использованным технологиям (не выложена на GitHub).*
 
