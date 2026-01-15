@@ -84,7 +84,12 @@
 ```bash
 docker-compose up -d --build
 ```
-*На этом этапе Docker создаст 4 контейнера: API, Worker (выполняет задачи), Scheduler (следит за временем) и Redis.*
+*На этом этапе Docker автоматически создаст необходимые директории на вашем компьютере, если они отсутствуют:*
+- `logs_docker_images/` — корневая папка для всех логов.
+- `logs_docker_images/web/`, `logs_docker_images/worker/`, `logs_docker_images/beat/`, `logs_docker_images/bot/` — для логов соответствующих сервисов.
+- `logs_docker_images/redis/` — для системных логов базы данных.
+
+*Затем Docker создаст 4 контейнера: API, Worker (выполняет задачи), Scheduler (следит за временем) и Redis.*
 
 ### Шаг 3: Авторизация
 После запуска зайдите в логи контейнера `worker`:
