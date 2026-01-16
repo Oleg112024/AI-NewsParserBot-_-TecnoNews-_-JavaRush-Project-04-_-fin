@@ -3,12 +3,16 @@ version: "3.9"
 services:
   redis:
     image: redis:7.2.4-alpine
+    # Запуск от пользователя с UID 1000 для синхронизации прав Redis и appuser в контейнере на запись логов в монтируемые папки
+    user: "1000:1000"
     container_name: redis-newsbot-${APP_VERSION:-latest}
     restart: unless-stopped
+    # Настройка логов Redis: путь внутри контейнера и уровень детализации из .env
     command: ["redis-server", "--logfile", "/var/log/redis/redis.log", "--loglevel", "${REDIS_LOG_LEVEL:-notice}"]
     ports:
       - "6379:6379"
     volumes:
+      # Монтирование папки логов: хост -> контейнер
       - ./logs_docker_images/redis:/var/log/redis
     deploy:
       resources:
@@ -114,5 +118,4 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-
 
