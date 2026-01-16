@@ -88,6 +88,7 @@ docker-compose up -d --build
 - `logs_docker_images/` — корневая папка для всех логов, создаётся автоматически на компьютере пользователя.
 - `logs_docker_images/web/`, `logs_docker_images/worker/`, `logs_docker_images/beat/`, `logs_docker_images/bot/` — для логов соответствующих сервисов.
 - `logs_docker_images/redis/` — для системных логов базы данных.
+- `redis_data/` — для хранения самой базы данных Redis (чтобы данные не пропадали при перезапуске).
 
 *Затем Docker создаст 4 контейнера: API, Worker (выполняет задачи), Scheduler (следит за временем) и Redis.*
 
