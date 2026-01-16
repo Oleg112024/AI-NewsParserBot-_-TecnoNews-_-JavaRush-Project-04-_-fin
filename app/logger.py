@@ -71,7 +71,7 @@ def setup_logging(service_name: str):
         root_logger.addHandler(error_handler)
 
         root_logger.info(f"Logging to file of the container: {log_file}")
-        root_logger.info(f"Critical errors will be mirrored to of the container: {error_log_file}")
+        root_logger.info(f"Critical errors will be mirrored to the container: {error_log_file}")
     except Exception as e:
         root_logger.error(f"FAILED to initialize file logging: {e}")
     
