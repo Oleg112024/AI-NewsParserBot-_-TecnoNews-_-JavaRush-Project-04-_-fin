@@ -328,12 +328,13 @@ def init_app_settings():
     client = get_redis_client()
     if client:
         logger.info("Successfully connected to Redis. Initializing settings...")
-        if not client.exists("settings:ai_enabled"):
-            client.set("settings:ai_enabled", "on")
+        if not client.exists("settings:ai_agent"):
+            # По умолчанию включаем ИИ, если он не был настроен ранее
+            client.set("settings:ai_agent", "on")
             logger.info("AI setting initialized to ON")
         
         # Проверяем текущее состояние для лога
-        ai_status = client.get("settings:ai_enabled")
+        ai_status = client.get("settings:ai_agent")
         logger.info(f"AI settings initialized to {ai_status.upper()} (available)")
     else:
         logger.error("Could not initialize app settings: Redis is unavailable")

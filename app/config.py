@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     
     debug: bool = Field(default=False, validation_alias="DEBUG")
     redis_url: str = Field(..., validation_alias="REDIS_URL")
-    app_version: str = Field(default="latest", validation_alias="APP_VERSION")
+    app_version: str = Field(default="v.0.3.35AI-MENU", validation_alias="APP_VERSION")
 
     # Telegram API Credentials
     telegram_api_id: int = Field(default=0, validation_alias="TELEGRAM_API_ID")

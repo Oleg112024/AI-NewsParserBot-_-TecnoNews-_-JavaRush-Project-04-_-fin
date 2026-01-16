@@ -25,7 +25,11 @@ async def generate_text_openai(prompt: str, system_message: str = "You are a hel
                 ],
                 temperature=0.7,
             )
-            return response.choices[0].message.content
+            result = response.choices[0].message.content
+            if result:
+                logger.info(f"Successfully generated text with OpenAI ({len(result)} chars)")
+            return result
+
     except Exception as e:
         if "insufficient_quota" in str(e):
             logger.error("OpenAI Error: Insufficient quota. Please check your billing/balance.")

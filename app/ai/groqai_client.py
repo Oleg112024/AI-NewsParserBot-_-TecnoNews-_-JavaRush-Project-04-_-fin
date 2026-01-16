@@ -41,11 +41,25 @@ async def generate_text_groq(prompt: str, system_message: str = "You are a helpf
             completion = await client.chat.completions.create(**params)
             
             full_response = []
-            async for chunk in completion:
-                if chunk.choices[0].delta.content:
-                    full_response.append(chunk.choices[0].delta.content)
-            
-            return "".join(full_response)
+            try:
+                async for chunk in completion:
+                    if hasattr(chunk, 'choices') and chunk.choices:
+                        content = chunk.choices[0].delta.content
+                        if content:
+                            full_response.append(content)
+            except Exception as stream_err:
+                logger.error(f"Error during Groq streaming: {stream_err}")
+                # Если стриминг прервался, но мы уже что-то получили, попробуем вернуть это
+                if not full_response:
+                    return None
+
+            result = "".join(full_response).strip()
+            if not result:
+                logger.warning("Groq returned an empty response.")
+                return None
+
+            logger.info(f"Successfully generated text with Groq ({len(result)} chars)")
+            return result
         
     except Exception as e:
         logger.error(f"Error during Groq AI text generation: {str(e)}")

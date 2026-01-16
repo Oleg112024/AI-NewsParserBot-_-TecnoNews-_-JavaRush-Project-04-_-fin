@@ -25,7 +25,11 @@ async def generate_text_deepseek(prompt: str, system_message: str = "You are a h
                 ],
                 temperature=0.7,
             )
-            return response.choices[0].message.content
+            result = response.choices[0].message.content
+            if result:
+                logger.info(f"Successfully generated text with DeepSeek ({len(result)} chars)")
+            return result
+
     except Exception as e:
         logger.error(f"Error during DeepSeek AI text generation: {str(e)}")
         return None

@@ -1,0 +1,29 @@
+# Игнорируем виртуальное окружение (оно весит сотни МБ и не нужно в контейнере)
+.venv/
+venv/
+env/
+
+# Игнорируем данные и логи (они монтируются как тома)
+redis_data/
+logs_docker_images/
+logs/
+*.log
+
+# Игнорируем настройки IDE и Git
+.idea/
+.vscode/
+.git/
+.gitignore
+
+# Игнорируем кэш Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Игнорируем временные файлы
+.DS_Store
+Thumbs.db

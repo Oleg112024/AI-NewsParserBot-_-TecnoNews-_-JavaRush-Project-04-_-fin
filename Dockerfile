@@ -7,25 +7,13 @@ WORKDIR /app
 # Установка системных зависимостей для сборки пакетов
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
-    && rm -rf /var/lib/apt/lists/*
-
-# Создаем не-root пользователя для безопасности
-# Используем фиксированный UID 1000 для синхронизации прав с хост-системой (решает проблему Permission denied в логах)
-RUN useradd -m -u 1000 -s /bin/bash appuser && \
-    mkdir -p /app/logs && \
-    chown -R appuser:appuser /app
+    && rm -rf /var/lib/apt/lists/* \
+    && mkdir -p /app/logs
 
 COPY docker-requirements.txt .
 
 RUN pip install --no-cache-dir -r docker-requirements.txt
 
 COPY . .
-
-# Меняем владельца для всех скопированных файлов для appuser
-# Устанавливаем права 755 на папку логов для корректной записи при монтировании томов
-RUN chown -R appuser:appuser /app && \
-    chmod -R 755 /app/logs
-
-USER appuser
 
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

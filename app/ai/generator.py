@@ -26,20 +26,29 @@ async def generate_text(prompt: str, system_message: str = "You are a helpful as
     """
     Диспетчер для выбора AI провайдера на основе настроек.
     """
+    ai_status = get_ai_setting()
+
     # Проверяем настройку из Redis вместо статического .env
-    # Если bypass_news_setting=True, значит это запрос из чата, и мы не смотрим на общую настройку ИИ для новостей
-    if not bypass_news_setting and get_ai_setting() == "off":
-        logger.warning("AI Agent is disabled. Skipping AI generation.")
+    if not bypass_news_setting and ai_status == "off":
+        logger.warning(f"AI Agent is disabled (status: {ai_status}). Skipping AI generation.")
         return None
 
     provider = settings.ai_provider.lower()
-    if provider == "openai":
-        return await generate_text_openai(prompt, system_message)
-    elif provider == "deepseek":
-        return await generate_text_deepseek(prompt, system_message)
-    else:
-        # Groq по умолчанию
-        return await generate_text_groq(prompt, system_message)
+    logger.info(f"Generating text using provider: {provider} (AI Status: {ai_status})")
+
+    try:
+        if provider == "openai":
+            return await generate_text_openai(prompt, system_message)
+        elif provider == "deepseek":
+            return await generate_text_deepseek(prompt, system_message)
+        elif provider == "groq":
+            return await generate_text_groq(prompt, system_message)
+        else:
+            logger.warning(f"Unknown AI provider '{provider}'. Falling back to Groq.")
+            return await generate_text_groq(prompt, system_message)
+    except Exception as e:
+        logger.error(f"Critical error in generate_text dispatcher: {e}", exc_info=True)
+        return None
 
 async def generate_telegram_post(news: NewsItem) -> str:
     """

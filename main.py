@@ -5,7 +5,7 @@ from fastapi import FastAPI
 import uvicorn
 from app.config import settings
 from app.api import api_router
-from app.utils import save_source, get_redis_client
+from app.utils import save_source, get_redis_client, init_app_settings
 from app.schemas import Source
 
 from app.logger import setup_logging
@@ -17,6 +17,9 @@ logger = setup_logging("api")
 async def lifespan(app: FastAPI):
     # Действия при запуске
     logger.info("Starting Newsbot API...")
+
+    # Инициализация настроек в Redis (ИИ и др.)
+    init_app_settings()
     """
     Управление жизненным циклом приложения.
     Код до yield выполняется при запуске, после yield — при остановке.

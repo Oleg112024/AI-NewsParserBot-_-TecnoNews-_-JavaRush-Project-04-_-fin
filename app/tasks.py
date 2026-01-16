@@ -4,7 +4,7 @@ from celery.schedules import crontab
 from app.config import settings
 from app.news_parser import collect_from_all_sources
 from app.filters import filter_news
-from app.utils import save_news_item, list_news_items, is_news_published
+from app.utils import save_news_item, list_news_items, is_news_published, init_app_settings
 from app.ai.generator import generate_telegram_post
 from app.telegram.publisher import publish_to_channel
 from app.schemas import Post
@@ -15,6 +15,9 @@ from app.logger import setup_logging
 
 # Настройка логирования для Celery
 logger = setup_logging("celery")
+
+# Инициализация настроек в Redis при запуске воркера
+init_app_settings()
 
 # Инициализация Celery
 celery_app = Celery(
