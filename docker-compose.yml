@@ -36,7 +36,10 @@ services:
 
   # Основной API сервис (FastAPI)
   web:
-    build: .
+    build:
+      context: .
+      args:
+        APP_VERSION: ${APP_VERSION}
     image: tecnonews/web-app:${APP_VERSION}
     container_name: web-tecnonews-fastapi-${APP_VERSION}
     restart: unless-stopped
@@ -68,7 +71,10 @@ services:
 
   # Celery Worker: Обработка задач (скрапинг, ИИ)
   worker:
-    build: .
+    build:
+      context: .
+      args:
+        APP_VERSION: ${APP_VERSION}
     image: tecnonews/worker-app:${APP_VERSION}
     container_name: worker-tecnonews-${APP_VERSION}
     restart: unless-stopped
@@ -95,7 +101,10 @@ services:
 
   # Celery Beat: Планировщик задач
   beat:
-    build: .
+    build:
+      context: .
+      args:
+        APP_VERSION: ${APP_VERSION}
     image: tecnonews/beat-app:${APP_VERSION}
     container_name: beat-tecnonews-${APP_VERSION}
     restart: unless-stopped
@@ -120,7 +129,10 @@ services:
 
   # Telegram Bot: Интерактивное взаимодействие
   bot:
-    build: .
+    build:
+      context: .
+      args:
+        APP_VERSION: ${APP_VERSION}
     image: tecnonews/newsbot-app:${APP_VERSION}
     container_name: bot-tecnonews-interactive-${APP_VERSION}
     restart: unless-stopped

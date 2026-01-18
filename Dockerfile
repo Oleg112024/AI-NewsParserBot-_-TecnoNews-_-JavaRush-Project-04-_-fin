@@ -1,5 +1,8 @@
 FROM python:3.13-slim
 
+# Аргументы сборки
+ARG APP_VERSION=v.0.0.1-default
+
 # Переменные окружения Python для оптимизации работы в контейнере
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
