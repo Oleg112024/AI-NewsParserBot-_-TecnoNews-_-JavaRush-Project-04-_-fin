@@ -4,10 +4,14 @@ services:
   # Redis: Хранилище данных и брокер сообщений
   redis:
     image: redis:7.2.4-alpine
-    container_name: redis-newsbot-${APP_VERSION}
+    container_name: redis-tecnonews-${APP_VERSION}
     restart: unless-stopped
     command: >
-      redis-server 
+      redis-server
+      --appendonly yes
+      --appendfsync everysec
+      --auto-aof-rewrite-percentage 100
+      --auto-aof-rewrite-min-size 64mb
       --loglevel ${REDIS_LOG_LEVEL:-notice}
       --stop-writes-on-bgsave-error no
     ports:
@@ -33,8 +37,8 @@ services:
   # Основной API сервис (FastAPI)
   web:
     build: .
-    image: newsbot-app:${APP_VERSION}
-    container_name: web-newsbot-api-${APP_VERSION}
+    image: tecnonews/web-app:${APP_VERSION}
+    container_name: web-tecnonews-fastapi-${APP_VERSION}
     restart: unless-stopped
     env_file:
       - .env
@@ -50,7 +54,7 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-    command: uvicorn main:app --host 0.0.0.0 --port 8000
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --workers 1
     deploy:
       resources:
         limits:
@@ -64,8 +68,9 @@ services:
 
   # Celery Worker: Обработка задач (скрапинг, ИИ)
   worker:
-    image: newsbot-app:${APP_VERSION}
-    container_name: worker-newsbot-${APP_VERSION}
+    build: .
+    image: tecnonews/worker-app:${APP_VERSION}
+    container_name: worker-tecnonews-${APP_VERSION}
     restart: unless-stopped
     env_file:
       - .env
@@ -76,7 +81,7 @@ services:
         condition: service_healthy
     volumes:
       - ./logs_docker_images/worker:/app/logs
-    command: celery -A app.tasks:celery_app worker --loglevel=info
+    command: celery -A app.tasks:celery_app worker --loglevel=info --concurrency=2 -n worker1@%h
     deploy:
       resources:
         limits:
@@ -90,8 +95,9 @@ services:
 
   # Celery Beat: Планировщик задач
   beat:
-    image: newsbot-app:${APP_VERSION}
-    container_name: beat-newsbot-${APP_VERSION}
+    build: .
+    image: tecnonews/beat-app:${APP_VERSION}
+    container_name: beat-tecnonews-${APP_VERSION}
     restart: unless-stopped
     env_file:
       - .env
@@ -114,8 +120,9 @@ services:
 
   # Telegram Bot: Интерактивное взаимодействие
   bot:
-    image: newsbot-app:${APP_VERSION}
-    container_name: bot-newsbot-interactive-${APP_VERSION}
+    build: .
+    image: tecnonews/newsbot-app:${APP_VERSION}
+    container_name: bot-tecnonews-interactive-${APP_VERSION}
     restart: unless-stopped
     env_file:
       - .env

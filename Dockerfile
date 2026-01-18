@@ -1,6 +1,6 @@
 FROM python:3.13-slim
 
-# Запрещаем Python писать файлы .pyc на диск и включаем немедленный вывод логов
+# Переменные окружения Python для оптимизации работы в контейнере
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PYTHONPATH=/app
