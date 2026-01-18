@@ -2,6 +2,7 @@ import asyncio
 import logging
 import sys
 import os
+import signal
 
 # Добавляем корневую директорию проекта в sys.path, чтобы импорты 'app.*' работали
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
@@ -24,8 +25,25 @@ async def main():
     
     logger.info("Bot is authorized and listening for messages.")
     
+    # Обработка SIGTERM для корректного завершения в Docker
+    loop = asyncio.get_running_loop()
+    for sig in (signal.SIGTERM, signal.SIGINT):
+        loop.add_signal_handler(sig, lambda: asyncio.create_task(shutdown(client, sig)))
+
     # Работаем до тех пор, пока не остановят
-    await client.run_until_disconnected()
+    try:
+        await client.run_until_disconnected()
+    except asyncio.CancelledError:
+        logger.info("Bot task cancelled.")
+
+async def shutdown(client, sig):
+    logger.info(f"Received exit signal {sig.name}...")
+    await client.disconnect()
+    tasks = [t for t in asyncio.all_tasks() if t is not asyncio.current_task()]
+    [task.cancel() for task in tasks]
+    logger.info("Cleaning up and shutting down...")
+    loop = asyncio.get_running_loop()
+    loop.stop()
 
 if __name__ == "__main__":
     try:
