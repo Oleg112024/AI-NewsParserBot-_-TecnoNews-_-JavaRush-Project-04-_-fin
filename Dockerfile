@@ -33,3 +33,4 @@ LABEL maintainer="Oleg112024" \
 
 # По умолчанию запускаем API, но в docker-compose команда переопределяется для каждого сервиса
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+
